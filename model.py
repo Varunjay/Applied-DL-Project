@@ -16,7 +16,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class Model:
     """
-    To read model.h5
+    Returns the model
     """
     def __init__(self, loc):
         """
@@ -42,6 +42,6 @@ class Model:
         
     def prediction(self, review):
         """
-        Given a review predict the sentiments
+        Returns the prediction of the model
         """
         return argmax(self.model.predict([review]), axis=1)
