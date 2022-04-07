@@ -16,11 +16,11 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class Model:
     """
-    To read model.h5
+    Returns the model
     """
     def __init__(self, loc):
         """
-        Creates the model and laod the weight
+        Loads the model
         """
         bert_preprocess = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3")
         bert_encoder = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4")
@@ -42,6 +42,6 @@ class Model:
         
     def prediction(self, review):
         """
-        Given a review predict the sentiments
+        Returns the prediction of the model
         """
         return argmax(self.model.predict([review]), axis=1)
