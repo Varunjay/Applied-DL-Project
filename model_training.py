@@ -5,16 +5,17 @@ from numpy import argmax
 import tensorflow_text as text
 from sklearn.metrics import confusion_matrix, classification_report
 import sklearn.metrics as skm
+import time
 
 class ModelTraining:
-    def __init__(self, name = "", layer = 2):
+    def __init__(self, name = "", layer = "12_H-768_A-12/"):
 
         self.model_name = "model" + name
         self.layer = layer
 
     def creat_model(self):
         bert_preprocess = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3")
-        bert_encoder = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/" + self.layer)
+        bert_encoder = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-" + self.layer)
         # Bert layers
         text_input = tf.keras.layers.Input(shape=(), dtype=tf.string, name='text')
         preprocessed_text = bert_preprocess(text_input)
@@ -39,8 +40,8 @@ class ModelTraining:
         ]
 
         self.model.compile(optimizer='adam',
-                    loss='categorical_crossentropy', #for multiclass
-                    metrics=METRICS)
+                loss='categorical_crossentropy',
+                metrics=METRICS)
     
     def train_model(self, X_train, y_train, epochs = 10):
         self.model.fit(X_train, np.asarray(y_train), epochs = epochs)
@@ -64,10 +65,23 @@ class ModelTraining:
         print(skm.classification_report(y_test, y_pred))
         print(skm.confusion_matrix(y_test, y_pred))
     
-    def predict_model(self, X_test):
-        y_pred = self.model.predict(X_test)
+    def predict_model(self, X):
+        start = time()
+        if type(X) != list:
+            X = [X]
+        y_pred = self.model.predict(X)
         y_pred = np.argmax(y_pred, axis=1)
-        return y_pred
+        elapsed = time() - start
+        return y_pred, elapsed
+
+    def get_number_of_total_parameters(self):
+        return self.model.count_params()
+
+    def get_number_of_trainable_parameters(self):
+        return sum([np.prod(param.get_shape().as_list()) for param in self.model.trainable_variables()])
+
+    def get_number_of_non_trainable_parameters(self):
+        return sum([np.prod(param.get_shape().as_list()) for param in self.model.non_trainable_variables()])
 
 if "__name__" == "main":
     model = ModelTraining("bert12", 3)
