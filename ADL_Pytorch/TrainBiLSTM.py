@@ -21,7 +21,9 @@ if __name__ == '__main__':
     trainer = LSTM(BILSTM_CONFIG)
 
     trainer.train(X_train, y_train, y_train, MODEL_PATH)
-
+    
+    print("\nModel Training done...")
+    
     # print("\n\n\nPrediction...")
     # # Load the model and tokenizer
     # predicter = Bert(BERT_CONFIG)
